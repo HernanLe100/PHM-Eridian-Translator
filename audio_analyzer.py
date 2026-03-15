@@ -39,11 +39,12 @@ def freq_analysis(recorded_data: list) -> tuple[list, list]:
     f, t, Z = stft(np.array(recorded_data).flatten(), fs=SAMPLE_RATE, nperseg=FRAME_LEN, noverlap=0)
     # f is list of frequencies
     # t is list of timestamps of frame
-    # Z (row, col) is (frequency, time)
+    # Z (row, col) is amplitude of (frequency, time)
     mag_Z = np.abs(Z)
     
     frequencies = f
     freq_magnitudes = []
+    # need (time, frequency)
     for i in range(Z.shape[1]):
         freq_magnitudes.append(mag_Z[:,i])
     
