@@ -1,12 +1,14 @@
+# audio_analyzer.py - Hernan Le
+
+# This module contains functions for recording audio and making numpy arrays 
+# of the audio in the time and frequency domains. 
+# ----------------------------------------------------------------------
 import sounddevice as sd
 import numpy as np
 from scipy.signal import stft
 
 SAMPLE_RATE = 44100 
 FRAME_LEN = 2048
-
-
-
 # ----------------------------------------------------------------------
 
 # Takes audio input until user presses Enter
@@ -27,13 +29,19 @@ def record() -> list:
 
 # ----------------------------------------------------------------------
 
+# Takes array created by record() and returns two arrays:
+# time_axis is an array spanning from 0 to (SAMPLE_RATE * recording time length)
+# recording is the flattened array of recorded_data
 def time_analysis(recorded_data: list) -> tuple[list, list]:
     recording = np.array(recorded_data).flatten()
     RECORDING_TIME = len(recording)/SAMPLE_RATE
-    time_axis = np.linspace(0., RECORDING_TIME, len(recording), endpoint=False)
+    time_axis = np.linspace(0, RECORDING_TIME, len(recording), endpoint=False)
     
     return time_axis, recording
-    
+
+# Takes array created by record() and returns two arrays:
+# frequencies is an array spanning the range of frequencies being measured
+# freq_magnitudes is an array of lists of frequencies strengths across the recording's time
 def freq_analysis(recorded_data: list) -> tuple[list, list]:
     
     f, t, Z = stft(np.array(recorded_data).flatten(), fs=SAMPLE_RATE, nperseg=FRAME_LEN, noverlap=0)
@@ -52,8 +60,6 @@ def freq_analysis(recorded_data: list) -> tuple[list, list]:
 
 # ----------------------------------------------------------------------
 
-
-# ----------------------------------------------------------------------
 def main():
     recorded_data = record()
     if len(recorded_data) == 0:
@@ -74,12 +80,5 @@ def main():
     _, f4 = freq_analysis(wave4)
     _, f5 = freq_analysis(wave5)
     
-    
-    
-    
-
-    
-    
-
 if __name__ == "__main__":
     main()
