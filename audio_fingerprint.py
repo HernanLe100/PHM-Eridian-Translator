@@ -65,7 +65,8 @@ def generate_hashes(peaks:list) -> list:
 
 class FingerprintData:
     def __init__(self):
-        self._data : {str, list[tuple(str,int)]} = {} # maps hashes to their words and time points
+        self._data : dict[str, list[tuple[str,int]]] = {} # maps hashes to their words and time points
+        self._num_words :int= 0
     
     def add_hashes(self, word:str, hashes:list):
         for h, t in hashes:
@@ -73,10 +74,11 @@ class FingerprintData:
                 self._data[h] = [(word, t)]
             else:
                 self._data[h].append( (word, t) )
+        self._num_words += 1
     
     def find_match(self, hashes:list ) -> str|None:
         # store the match counts of different time offsets of audios
-        offsets : {tuple(str,int), int} = {} 
+        offsets : dict[tuple[str,int], int] = {} 
         
         # for each hash in the hashes list, find items in data with same hash
         for h, t in hashes:
@@ -99,6 +101,20 @@ class FingerprintData:
             return best_match[0][0] # return string word
         
         return None
+    
+    def get_dict(self) -> dict[str, list[tuple[str,int]]] :
+        return self._data
+    def get_num_words(self) -> int:
+        return self._num_words
+    
+    
+    def __str__(self) -> str:
+        return_string = ""
+        
+        for hash, word_time in self._data.items():
+            return_string += f"\n{hash}: {word_time}"
+        
+        return return_string
             
 
 # ----------------------------------------------------------------------
@@ -134,6 +150,19 @@ def main():
         print(f"Match: {match}")
     else:
         print("No match")
+        
+    #print(data)
+    
+    import json
+    str_data = json.dumps(data.get_dict())
+    data2 = json.loads(str_data)
+    # need to convert some lists to tuples! 
+    for hash, item_list in data2.items():
+        for i in range(len(item_list)):
+            item_list[i] = tuple(item_list[i])
+    print(f"dicts match after json: {data.get_dict() == data2}")
+    print(f"Number of words: {data.get_num_words()}")
+    
     
 
 if __name__ == "__main__":
