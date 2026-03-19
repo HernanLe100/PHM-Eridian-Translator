@@ -1,10 +1,16 @@
+# audio_fingerprint.py - Hernan Le
+
+# This module 
+# ----------------------------------------------------------------------
+
 import numpy as np
 import hashlib
 from scipy.signal import find_peaks
 
-
 import audio_analyzer as aud
 from audio_analyzer import SAMPLE_RATE, FRAME_LEN
+
+MATCH_THRESHOLD = 0 #
 
 # ----------------------------------------------------------------------
 
@@ -43,7 +49,7 @@ def generate_hashes(peaks:list) -> list:
     for i in range(len(peaks)):
         t1, f1 = peaks[i]
         
-        # pair up with (PAIR_RANGE_BOUND-1) nearby peaks
+        # pair up with (PAIR_RANGE_BOUND-1) future peaks
         for j in range(1, PAIR_RANGE_BOUND):
             if i + j < len(peaks):
                 t2, f2 = peaks[i + j]
@@ -52,17 +58,82 @@ def generate_hashes(peaks:list) -> list:
                 if 0 < dt and dt <= MAX_TIME_DELTA:
                     # hashes in form (f1, f2, dt)
                     h = hashlib.sha256(f"{f1},{f2},{dt}".encode()).hexdigest() # deterministic hashing 
-                    hashes.append((h, t1))
+                    hashes.append((h, t1)) # add (hash, time point) to list
     return hashes
 
 # ----------------------------------------------------------------------
 
+class FingerprintData:
+    def __init__(self):
+        self._data : {str, list[tuple(str,int)]} = {} # maps hashes to their words and time points
+    
+    def add_hashes(self, word:str, hashes:list):
+        for h, t in hashes:
+            if self._data.get(h, None) == None:
+                self._data[h] = [(word, t)]
+            else:
+                self._data[h].append( (word, t) )
+    
+    def find_match(self, hashes:list ) -> str|None:
+        # store the match counts of different time offsets of audios
+        offsets : {tuple(str,int), int} = {} 
+        
+        # for each hash in the hashes list, find items in data with same hash
+        for h, t in hashes:
+            if h in self._data:
+                # for each (word, time point) of item, compare and match with queried info
+                for word, t_word in self._data[h]:
+                    offset_key = (word, t_word - t) # use the offset between time points 
+                    # count the number of matches for a given (word, time delta)
+                    if offsets.get( offset_key, None ) == None:
+                        offsets[offset_key] = 1
+                    else:
+                        offsets[offset_key] += 1
+        
+        if len(offsets) == 0:
+            return None
+        # item is ((word, time point), count)
+        # get the offsets item with the best count 
+        best_match = max(offsets.items(), key=lambda item: item[1]) 
+        if best_match[1] >= MATCH_THRESHOLD:
+            return best_match[0][0] # return string word
+        
+        return None
+            
+
+# ----------------------------------------------------------------------
+
 def main():
+    data = FingerprintData()
+    
+    recorded_data = aud.record()
+    frequencies, freq_magintudes = aud.freq_analysis(recorded_data)
+    peaks = get_peaks( freq_magintudes )
+    hashes = generate_hashes(peaks)
+    data.add_hashes("audio1", hashes)
+    
+    print("\nPress Enter to record.")
+    input()
+    
+    recorded_data = aud.record()
+    frequencies, freq_magintudes = aud.freq_analysis(recorded_data)
+    peaks = get_peaks( freq_magintudes )
+    hashes = generate_hashes(peaks)
+    data.add_hashes("audio2", hashes)
+    
+    print("\nPress Enter to record.")
+    input()
+    
     recorded_data = aud.record()
     frequencies, freq_magintudes = aud.freq_analysis(recorded_data)
     peaks = get_peaks( freq_magintudes )
     hashes = generate_hashes(peaks)
     
+    match = data.find_match(hashes)
+    if match:
+        print(f"Match: {match}")
+    else:
+        print("No match")
     
 
 if __name__ == "__main__":
