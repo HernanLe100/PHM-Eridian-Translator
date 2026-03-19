@@ -13,6 +13,7 @@ FRAME_LEN = 2048 # number of points being analyzed at a time for FFT
 
 # Takes audio input until user presses Enter
 # Returns the array of recorded_data - list of arrays of length FRAME_LEN
+# Recommend checking whether the returned list has lengh 0 before using it
 def record() -> list:
     recorded_data = []
     def callback(indata, frames, time, status):
@@ -70,19 +71,6 @@ def main():
     
     time_arr = np.arange(SAMPLE_RATE)
     wave1 = np.sin(2 * np.pi * 440 * time_arr/ SAMPLE_RATE)
-    wave2 = wave1 + np.sin(2 * np.pi * 349 * time_arr/ SAMPLE_RATE) 
-    wave3 = wave2 + np.sin(2 * np.pi * 262 * time_arr/ SAMPLE_RATE) 
-    wave4 = np.sin(2 * np.pi * 880 * time_arr/ SAMPLE_RATE) + np.sin(2 * np.pi * 698 * time_arr/ SAMPLE_RATE) + np.sin(2 * np.pi * 524 * time_arr/ SAMPLE_RATE) 
-    wave5 = np.sin(2 * np.pi * 880 * time_arr/ SAMPLE_RATE) + np.sin(2 * np.pi * 698 * time_arr/ SAMPLE_RATE) 
-    _, f1 = freq_analysis(wave1)
-    _, f2 = freq_analysis(wave2)
-    _, f3 = freq_analysis(wave3)
-    _, f4 = freq_analysis(wave4)
-    _, f5 = freq_analysis(wave5)
-    
-    import audio_visualizer 
-    _, sldr = audio_visualizer.create_time_graph(time_axis, recording)
-    audio_visualizer.show_graphs()
     
 if __name__ == "__main__":
     main()
