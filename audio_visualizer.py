@@ -10,7 +10,7 @@ import threading
 import math
 
 import matplotlib.pyplot as plt
-from matplotlib.widgets import Slider, Button
+from matplotlib.widgets import Slider
 
 import audio_analyzer as aud
 from audio_analyzer import SAMPLE_RATE, FRAME_LEN
@@ -21,9 +21,9 @@ from audio_analyzer import SAMPLE_RATE, FRAME_LEN
 # and display graphs if provided 
 # Functions as a "fire and forget" audio player
 class AudioPlayThread(threading.Thread):
-    def __init__(self, rec, t_sldr= None, f_sldr=None):
+    def __init__(self, rec:list[list[float]], t_sldr= None, f_sldr=None):
         threading.Thread.__init__(self)
-        self._recorded_data = rec
+        self._recorded_data = np.expand_dims( rec , axis=2) # need to expand so that it can be played in callback
         self._time_slider = t_sldr
         self._freq_slider = f_sldr
         self._rd_index = 0
@@ -33,7 +33,7 @@ class AudioPlayThread(threading.Thread):
         def callback(outdata, frames, time, status):
             if self._rd_index >= len(self._recorded_data):
                 return
-            outdata[:] = self._recorded_data[self._rd_index]
+            outdata[:] = self._recorded_data[self._rd_index] # in place assignment
             self._rd_index += 1
             if self._time_slider:
                 self._time_slider.set_val(self._rd_index * FRAME_LEN / SAMPLE_RATE)

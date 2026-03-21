@@ -67,6 +67,8 @@ class FingerprintData:
     def __init__(self):
         self._data : dict[str, list[tuple[str,int]]] = {} # maps hashes to their words and time points
         self._num_words :int= 0
+        self._shortest = float("inf")
+        self._longest = 0
     
     def add_hashes(self, word:str, hashes:list):
         for h, t in hashes:
@@ -75,7 +77,13 @@ class FingerprintData:
             else:
                 self._data[h].append( (word, t) )
         self._num_words += 1
-    
+        # the last hash should have the last time point
+        final_t = hashes[-1][1]
+        if final_t < self._shortest:
+            self._shortest = final_t
+        if final_t > self._longest:
+            self._longest = final_t
+            
     def find_match(self, hashes:list ) -> str|None:
         # store the match counts of different time offsets of audios
         offsets : dict[tuple[str,int], int] = {} 
@@ -94,7 +102,7 @@ class FingerprintData:
         
         if len(offsets) == 0:
             return None
-        # item is ((word, time point), count)
+        # item is ((word, time delta), count)
         # get the offsets item with the best count 
         best_match = max(offsets.items(), key=lambda item: item[1]) 
         if best_match[1] >= MATCH_THRESHOLD:
@@ -107,6 +115,18 @@ class FingerprintData:
     def get_num_words(self) -> int:
         return self._num_words
     
+    #
+    def add_recording(self,  word: str, recorded_data : list[list[float]]):
+        _, freq_magintudes = aud.freq_analysis(recorded_data)
+        peaks = get_peaks( freq_magintudes )
+        hashes = generate_hashes(peaks)
+        self.add_hashes(word, hashes)
+        
+    def match_recording(self, recorded_data:list[list[float]]) -> str:
+        _, freq_magintudes = aud.freq_analysis(recorded_data)
+        peaks = get_peaks( freq_magintudes )
+        hashes = generate_hashes(peaks)
+        return self.find_match(hashes)
     
     def __str__(self) -> str:
         return_string = ""
@@ -123,29 +143,20 @@ def main():
     data = FingerprintData()
     
     recorded_data = aud.record()
-    frequencies, freq_magintudes = aud.freq_analysis(recorded_data)
-    peaks = get_peaks( freq_magintudes )
-    hashes = generate_hashes(peaks)
-    data.add_hashes("audio1", hashes)
+    data.add_recording( "audio1" , recorded_data,)
     
     print("\nPress Enter to record.")
     input()
     
     recorded_data = aud.record()
-    frequencies, freq_magintudes = aud.freq_analysis(recorded_data)
-    peaks = get_peaks( freq_magintudes )
-    hashes = generate_hashes(peaks)
-    data.add_hashes("audio2", hashes)
+    data.add_recording("audio2", recorded_data)
     
     print("\nPress Enter to record.")
     input()
     
     recorded_data = aud.record()
-    frequencies, freq_magintudes = aud.freq_analysis(recorded_data)
-    peaks = get_peaks( freq_magintudes )
-    hashes = generate_hashes(peaks)
     
-    match = data.find_match(hashes)
+    match = data.match_recording(recorded_data)
     if match:
         print(f"Match: {match}")
     else:
