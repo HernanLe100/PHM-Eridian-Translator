@@ -11,12 +11,8 @@
 import sounddevice as sd
 import numpy as np
 
-#from scipy.signal import stft, istft
-
 SAMPLE_RATE = 44100 # recording processes 44100 input points per second (44100 Hz)
 BLOCK_SIZE = 441 # stream sends data in blocks of 441, each block takes 0.01 seconds
-
-#FRAME_LEN = 2048 # number of points being analyzed at a time frame for FFT
 
 # if root mean square (RMS) of a block is less than this, 
 # the block is considered silent, denoting the end of a word
@@ -63,20 +59,12 @@ def record_word():
     recording = np.array(recorded_data).flatten()    
     return recording
 
-
-"""
-def get_spectrogram(recording : np.array):
-    _, _, Z = stft(recording, fs=SAMPLE_RATE, nperseg=FRAME_LEN, noverlap=FRAME_LEN*3//4)
-    return np.abs(Z)
-"""
-
+# ----------------------------------------------------------------------
 
 def main():
     while True:
         recording = record_word()
-        if len(recording) >= MIN_WORD_BLOCK_LEN * BLOCK_SIZE:
-            #print(len(recording))
-            print(len(recording) // BLOCK_SIZE )
+        print(len(recording) // BLOCK_SIZE )
 
 if __name__ == "__main__":
     main()
