@@ -6,13 +6,22 @@ import numpy as np
 from scipy.signal import stft, istft
 
 SAMPLE_RATE = 44100 # recording processes 44100 input points per second (44100 Hz)
-FRAME_LEN = 2048 # number of points being analyzed at a time frame for FFT
+
+# number of raw frequency "buckets" per time frame used in Fourier Transform.
+# number of output frequency buckets = (RAW_FREQS_PER_FRAME // 2) + 1
+# higher -> more detailed spectrogram along frequency domain
+RAW_FREQS_PER_FRAME = 2048 
+
+# amount of overlap between time frames
+# higher -> more detailed spectrogram along time domain
+FRAME_OVERLAP = RAW_FREQS_PER_FRAME * 3 // 4
+
 EPSILON = 1e-10
 
 # ----------------------------------------------------------------------
 
 def get_spectrogram(recording : np.array):
-    _, _, Z = stft(recording, fs=SAMPLE_RATE, nperseg=FRAME_LEN, noverlap=FRAME_LEN*3//4)
+    _, _, Z = stft(recording, fs=SAMPLE_RATE, nperseg=RAW_FREQS_PER_FRAME, noverlap=FRAME_OVERLAP)
     return np.abs(Z)
 
 def remove_noise(Z, strength=0.15):
