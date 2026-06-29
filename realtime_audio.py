@@ -14,10 +14,6 @@ import numpy as np
 SAMPLE_RATE = 44100 # recording processes 44100 input points per second (44100 Hz)
 BLOCK_SIZE = 441 # stream sends data in blocks of 441, each block takes 0.01 seconds
 
-# if root mean square (RMS) of a block is less than this, 
-# the block is considered silent, denoting the end of a word
-SILENCE_THRESHOLD = 0.025
-
 # A word should be at least 5 blocks (0.05 seconds) long.
 # This 1) prevents script from processing silence as words 
 # and 2) gives recording enough time to collect input without being cut by silence.
@@ -28,7 +24,7 @@ MIN_WORD_BLOCK_LEN = 5
 # Records audio until silence, returns the recording.
 # If encountering silence while the audio is shorter than MIN_WORD_BLOCK_LEN,
 # this function effectively restarts until the recorded word is long enough.
-def record_word():
+def record_word(silence_threshold=0.025):
     recorded_data = []
     streaming = [True] # setting boolean inside an array so that callback function can access
     
@@ -45,7 +41,9 @@ def record_word():
         #print(len(recorded_data))
         #print(rms)
         
-        if rms < SILENCE_THRESHOLD :
+        # if root mean square (RMS) of a block is less than this, 
+        # the block is considered silent, denoting the end of a word
+        if rms < silence_threshold :
             if len(recorded_data) >= MIN_WORD_BLOCK_LEN:
                 streaming[0] = False # stops the input stream
             else:
