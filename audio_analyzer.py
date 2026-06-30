@@ -20,13 +20,13 @@ EPSILON = 1e-10 # "zero" value, prevents some functions from breaking with 0
 
 # ----------------------------------------------------------------------
 
-# returns spectrogram of recording as m by n matrix
+# Returns spectrogram of recording as m by n matrix
 # with m frequencies and n time frames
 def get_spectrogram(recording : np.array):
     _, _, Z = stft(recording, fs=SAMPLE_RATE, nperseg=RAW_FREQS_PER_FRAME, noverlap=FRAME_OVERLAP)
     return np.abs(Z)
 
-# returns spectrogram with frequencies lower than _____ zeroed out (to epsilon)
+# Returns spectrogram with frequencies lower than (strength * max magnitude) zeroed out (to epsilon)
 def remove_noise(Z, strength=0.15):
     larqest_freq_mag = np.max(Z)
     subtracted = Z - np.array([larqest_freq_mag * strength])

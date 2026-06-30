@@ -1,4 +1,9 @@
 # audio_dtw.py - Hernan Le
+
+# This module contains functions to perform dynamic time warping (DTW).
+# The DTW algorithm use cosine similarity instead of Euclidian distance 
+# so that frame vectors are compared by frequency composition rather than volume. 
+
 # ----------------------------------------------------------------------
 
 import numpy as np
@@ -7,16 +12,14 @@ EPSILON = 1e-10 # "zero" value, prevents some functions from breaking with 0
 
 # ----------------------------------------------------------------------
 
-
+# Compares how similar vectors a and b are
 def cos_sim(a, b):
     # (a * b) / (|a| |b|)
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + EPSILON)
 
-
+# Performs DTW on matrices A and B, returning the final cost, path, and cost matrix.
+# A and B have shape (frequencies, frames).
 def dtw(A, B):
-    
-    # matrix shape (frequencies, frames)
-
     if A.shape[0] != B.shape[0]:
         raise ValueError(
             f"Frequency dimension mismatch: A: {A.shape[0]}, B: {B.shape[0]}"
@@ -40,9 +43,9 @@ def dtw(A, B):
             cost = 1 - cos_sim(a_frame, b_frame) 
 
             dtw_matrix[i, j] = cost + min(
+                dtw_matrix[i-1, j-1], # match
                 dtw_matrix[i-1, j], # insertion
-                dtw_matrix[i, j-1], # deletion
-                dtw_matrix[i-1, j-1] # match
+                dtw_matrix[i, j-1] # deletion
             )
 
     # Backtrack optimal path
@@ -64,10 +67,11 @@ def dtw(A, B):
 
     return dtw_matrix[frames_A, frames_B], path, dtw_matrix[1:, 1:]
 
-from realtime_audio import record_word
-from audio_analyzer import get_spectrogram, remove_noise
+# ----------------------------------------------------------------------
 
 def main():
+    from realtime_audio import record_word
+    from audio_analyzer import get_spectrogram, remove_noise
     
     input("press Enter when ready")
     print("recording...")
