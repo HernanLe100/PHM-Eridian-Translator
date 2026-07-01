@@ -8,14 +8,13 @@
 
 import numpy as np
 
-EPSILON = 1e-10 # "zero" value, prevents some functions from breaking with 0 
-
 # ----------------------------------------------------------------------
 
 # Compares how similar vectors a and b are
+# Assume a and b are nonzero
 def cos_sim(a, b):
     # (a * b) / (|a| |b|)
-    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + EPSILON)
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
 # Performs DTW on matrices A and B, returning the final cost, path, and cost matrix.
 # A and B have shape (frequencies, frames).
@@ -85,16 +84,20 @@ def main():
     print("recording...")
     r3 = record_word()
     print("recording complete")
+    print()
     
     s1 = remove_noise(get_spectrogram(r1))
     s2 = remove_noise(get_spectrogram(r2))
     s3 = remove_noise(get_spectrogram(r3))
     
-    score2, _, _ = dtw(s1, s2)
-    score3, _, _ = dtw(s1, s3)
+    score2, p2, _ = dtw(s1, s2)
+    score3, p3, _ = dtw(s1, s3)
     
     print("recording 2 DTW cost:", score2)
     print("recording 3 DTW cost:", score3)
+    print()
+    print("recording 2 DTW scaled cost:", score2/len(p2))
+    print("recording 3 DTW scaled cost:", score3/len(p3))
 
 if __name__ == "__main__":
     main()
