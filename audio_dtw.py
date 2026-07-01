@@ -66,6 +66,11 @@ def dtw(A, B):
 
     return dtw_matrix[frames_A, frames_B], path, dtw_matrix[1:, 1:]
 
+
+def scaled_dtw_cost(A, B):
+    cost, path, _ = dtw(A, B)
+    return cost / len(path)
+
 # ----------------------------------------------------------------------
 
 def main():
@@ -95,6 +100,9 @@ def main():
     
     print("recording 2 DTW cost:", score2)
     print("recording 3 DTW cost:", score3)
+    print()
+    print("recording 2 DTW path length:", len(p2))
+    print("recording 3 DTW path length:", len(p3))
     print()
     print("recording 2 DTW scaled cost:", score2/len(p2))
     print("recording 3 DTW scaled cost:", score3/len(p3))
