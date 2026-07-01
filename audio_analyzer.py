@@ -30,11 +30,11 @@ def get_spectrogram(recording : np.array):
 def remove_noise(Z, strength=0.15):
     larqest_freq_mag = np.max(Z)
     subtracted = Z - np.array([larqest_freq_mag * strength])
-    return np.where(subtracted <= 0, EPSILON, Z)
+    return np.where(subtracted < 0, EPSILON, Z)
 
 # ----------------------------------------------------------------------
-
-
+    
+    
 
 # ----------------------------------------------------------------------
 
