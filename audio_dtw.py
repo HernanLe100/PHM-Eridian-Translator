@@ -73,7 +73,7 @@ def dtw(A, B):
 # Performs DTW on matrices A and B, returning the final cost, path, and cost matrix.
 # A and B have shape (frequencies, frames).
 # As the algorithm runs, if minimum cost exceeds cutoff, the function ends 
-# and returns np.inf, None, None 
+# and returns (np.inf, None, None).
 def dtw_with_cutoff(A, B, cutoff=np.inf):
     if A.shape[0] != B.shape[0]:
         raise ValueError(

@@ -1,25 +1,43 @@
+# bucket_vp_tree.py - Hernan Le
+
+# This module implements a vantage point tree data structure with buckets. 
+
+# Each leaf node has a bucket that stores a list of items. 
+# Once the length of the list exceeds a certain amount, the list splits 
+# so that half of the items are within a calculated distance to the node's 
+# vantage point. One item from each half is then chosen to become the vantage 
+# point for the respective child node.
+# Buckets are used to balance between cost of adding to the tree and searching the tree.
+
+# ----------------------------------------------------------------------
+
 from typing import Callable
 import numpy as np
 
+# ----------------------------------------------------------------------
+
+# implements the functionality for individual nodes
 class VP_Node:
-    
+    # Constructor requires a distance function to specify 
+    # how to calculate distance between items.
+    # If provided a specific data dict, the node is built according to the data.
     def __init__( self, 
             dist_func: Callable[[object, object],float], 
-            data=None
+            data:dict=None
         ):
         
-        self._dist_func = dist_func
+        self._dist_func = dist_func 
         
         self._vantage_point = None
         self._radius = -1
         
-        self._bucket = []
+        self._bucket = [] # by default, a new node is a leaf 
         
         self._left = None
         self._right = None
         
         if data: # my_dict is not None and not empty
-            if "bucket" in data: 
+            if "bucket" in data: # is leaf 
                 self._bucket = data["bucket"]
                 self._vantage_point = data["vantage point"]
                 self._radius = -1
@@ -29,19 +47,18 @@ class VP_Node:
                 self._vantage_point = data["vantage point"]
                 self._radius = data["radius"]
                 self._bucket = None
-                
                 self._left = VP_Node(dist_func=self._dist_func, data=data["left"])
                 self._right = VP_Node(dist_func=self._dist_func, data=data["right"])
+    
+    def is_leaf(self) -> bool:
+        # node is leaf iff bucket is not None
+        # also note: as a leaf, radius is -1 (not set yet) and left and right are None
+        return self._bucket is not None
     
     def get_bucket(self):
         return self._bucket
     def bucket_length(self) -> int:
         return len(self._bucket)
-    
-    def is_leaf(self) -> bool:
-        # node is leaf iff bucket is not None
-        # also note: as a leaf, radius is -1 (not set yet) and left and right are None
-        return self._left is None and self._right is None 
     
     def get_vantage_point(self):
         return self._vantage_point
@@ -51,13 +68,19 @@ class VP_Node:
         return self._left
     def get_right(self):
         return self._right
-        
+    
+    # Adds value to node. 
+    # The first value added to a node becomes the vantage point
+    # Otherwise, the value is appended to a list.
     def add(self, value):
         if self._vantage_point is None:
             self._vantage_point = value
         else:
             self._bucket.append(value)
         
+    # Calculates the distances to the vantage point from each item in the bucket 
+    # and finds the median distance.
+    # Returns the index of the median distance and the list of distances.
     def _get_median(self) -> int:
         dist_bucket = []
         for v in self._bucket:
@@ -67,7 +90,8 @@ class VP_Node:
         # lean toward lower if length is even
         median_index = ((len(sorted_indexes)+1) // 2) - 1
         return sorted_indexes[median_index], dist_bucket
-        
+    
+    # Splits the node along its median, creating left and right child nodes.
     def split(self):
         median_index, dist_bucket = self._get_median()
         
@@ -78,6 +102,7 @@ class VP_Node:
         self._right = VP_Node(self._dist_func)
         
         for i in range(len(self._bucket)):
+            # distances less than or equal to the radius go left
             if dist_bucket[i] <= self._radius:
                 self._left.add(self._bucket[i])
             else:
@@ -85,7 +110,8 @@ class VP_Node:
         
         # bucket no longer in use after splitting
         self._bucket = None
-        
+    
+    # Returns dict representation of this node.
     def to_dict(self):
         if self.is_leaf():
             return {
@@ -99,7 +125,6 @@ class VP_Node:
                 "left" : self._left.to_dict(),
                 "right" : self._right.to_dict(),
             }
-            
 
 # ----------------------------------------------------------------------
 
@@ -121,11 +146,9 @@ class Bucket_VP_Tree:
         
     def _add(self, node:VP_Node, value):
         if node.is_leaf() :
-            if node.bucket_length() == self._bucket_capacity:
+            node.add(value)
+            if node.bucket_length() > self._bucket_capacity:
                 node.split()
-                self._add(node, value)
-            else:
-                node.add(value)
         else:
             dist = self._dist_func(node.get_vantage_point(), value)
             if dist <= node.get_radius():
@@ -177,7 +200,6 @@ class Bucket_VP_Tree:
         return self._root.to_dict()
     
 # ----------------------------------------------------------------------
-
     
 def main():
     bvp = Bucket_VP_Tree(lambda a,b: (a-b)**2, bucket_capacity=2)
