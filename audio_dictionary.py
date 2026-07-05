@@ -39,8 +39,8 @@ class AudioDictionary:
         # Returns the normalized DTW cost (normalized cost = total cost / path length)
         def dist_func(a,b):
             with h5py.File(self._spectrogram_file, "r") as f:
-                A = f[str(a)][:]
-                B = f[str(b)][:]
+                A = f[str(a["key"])][:]
+                B = f[str(b["key"])][:]
                 
                 if self._use_cutoff:
                     cost, path, _ = dtw_with_cutoff(
@@ -94,16 +94,16 @@ class AudioDictionary:
         self._best_cost_norm = NEAREST_BOUND # reset the best normalized cost
     
     # adds recording to the data structure
-    def add_recording(self, recording):
+    def add_recording(self, recording, label=""):
         spec = remove_noise(get_spectrogram(recording))
-        self.add_spectrogram(spec)
+        self.add_spectrogram(spec, label)
     
     # add spectrogram to the data structure
-    def add_spectrogram(self, spec):
+    def add_spectrogram(self, spec, label=""):
         with h5py.File(self._spectrogram_file, "a") as f:
             f.create_dataset(str(self._num), data=spec, compression="gzip")
         self._set_use_cutoff(False)
-        self._audio_dict .add(self._num)    
+        self._audio_dict .add({"key": self._num, "label": label})    
         self._num += 1
     
     # saves the structure of the current VP tree to a .json file
@@ -124,7 +124,7 @@ class AudioDictionary:
             f.create_dataset(QUERY_KEY, data=spec, compression="gzip")
             
             self._set_use_cutoff(True) # use dtw_with_cutoff()
-            match = self._audio_dict.nearest(QUERY_KEY, bound=NEAREST_BOUND)
+            match = self._audio_dict.nearest({"key": QUERY_KEY}, bound=NEAREST_BOUND)
             del f[QUERY_KEY] # remove query
             self._set_use_cutoff(False) # and reset 
             return match
