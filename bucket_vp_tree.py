@@ -36,7 +36,7 @@ class VP_Node:
         self._left = None
         self._right = None
         
-        if data: # my_dict is not None and not empty
+        if data: # data is not None and not empty
             if "bucket" in data: # is leaf 
                 self._bucket = data["bucket"]
                 self._vantage_point = data["vantage point"]
@@ -91,7 +91,7 @@ class VP_Node:
         median_index = ((len(sorted_indexes)+1) // 2) - 1
         return sorted_indexes[median_index], dist_bucket
     
-    # Splits the node along its median, creating left and right child nodes.
+    # splits the node along its median, creating left and right child nodes
     def split(self):
         median_index, dist_bucket = self._get_median()
         
@@ -111,7 +111,7 @@ class VP_Node:
         # bucket no longer in use after splitting
         self._bucket = None
     
-    # Returns dict representation of this node.
+    # returns dict representation of this node
     def to_dict(self):
         if self.is_leaf():
             return {
@@ -128,8 +128,12 @@ class VP_Node:
 
 # ----------------------------------------------------------------------
 
+# implements the functionality for bucket VP tree
 class Bucket_VP_Tree:
-    
+    # Constructor requires a distance function to specify 
+    # how to calculate distance between items.
+    # Specific bucket capacity can be specified. Once a bucket's capacity is exceeded, it will split.
+    # If provided a specific data dict, the tree is built according to the data.
     def __init__(self, 
             dist_func: Callable[[object, object],float], 
             bucket_capacity = 10,
@@ -140,10 +144,11 @@ class Bucket_VP_Tree:
         self._bucket_capacity = bucket_capacity
         self._root = VP_Node(dist_func, data = data)
         
-    
+    # adds value to tree
     def add(self, value):
         self._add(self._root, value)
-        
+    
+    # recursive helper function to add to tree
     def _add(self, node:VP_Node, value):
         if node.is_leaf() :
             node.add(value)
@@ -156,10 +161,15 @@ class Bucket_VP_Tree:
             else: 
                 self._add(node.get_right(), value)
     
+    # Searches for item nearest to query value.
+    # Returns a dict consisting of the nearest value and distance from the query.
+    # If bound is given, the function searches for the nearest value that 
+    # has a distance less than the bound.
     def nearest(self, value, bound=np.inf):
         best = {"value": None, "dist": bound}
         return self._nearest(self._root, value, best)
     
+    # recursive helper function to search for nearest value
     def _nearest(self, node:VP_Node, value, best):
         if node.is_leaf():
             if node.get_vantage_point() is not None: 
@@ -196,6 +206,7 @@ class Bucket_VP_Tree:
                     best = self._nearest(node.get_left(), value, best)
             return best
     
+    # returns dict representation of this tree
     def to_dict(self):
         return self._root.to_dict()
     
