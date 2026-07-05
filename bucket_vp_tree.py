@@ -213,7 +213,10 @@ class Bucket_VP_Tree:
 # ----------------------------------------------------------------------
     
 def main():
-    bvp = Bucket_VP_Tree(lambda a,b: (a-b)**2, bucket_capacity=2)
+    def dist_sq(a,b):
+        return (a-b)**2
+    
+    bvp = Bucket_VP_Tree(dist_sq, bucket_capacity=2)
     
     bvp.add(1)
     bvp.add(2)
@@ -222,14 +225,12 @@ def main():
     bvp.add(5)
     bvp.add(4.5)
     print( bvp.nearest(4.4) )
+    
     data = bvp.to_dict()
     print(data)
     
-    bvp2 = Bucket_VP_Tree(lambda a,b: (a-b)**2, bucket_capacity=2, data = data)
+    bvp2 = Bucket_VP_Tree(dist_sq, bucket_capacity=2, data = data)
     print(bvp2.to_dict())
-    
-    import json
-    print(json.loads(json.dumps(bvp2.to_dict())))
     
 
 if __name__ == "__main__":
