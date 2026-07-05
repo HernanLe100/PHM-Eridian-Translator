@@ -120,7 +120,7 @@ def dtw_with_cutoff(A, B, cutoff=np.inf):
         # if the minimum cost for first i A frames across all B frames is 
         # more than the cutoff amount, then end the function early
         if i%5==0 and np.min(dtw_matrix[i, 1:]) > cutoff: # check every 5 frames
-            print(f"cutoff at i={i+1} of {frames_A}")
+            # print(f"cutoff at i={i+1} of {frames_A}")
             return np.inf, None, None
 
     # backtrack optimal path
@@ -151,16 +151,15 @@ def main():
     input("press Enter when ready")
     print("recording...")
     r1 = record_word()
-    print("recording complete")
+    print("recording complete\n")
     input("press Enter when ready")
     print("recording...")
     r2 = record_word()
-    print("recording complete")
+    print("recording complete\n")
     input("press Enter when ready")
     print("recording...")
     r3 = record_word()
-    print("recording complete")
-    print()
+    print("recording complete\n")
     
     s1 = remove_noise(get_spectrogram(r1))
     s2 = remove_noise(get_spectrogram(r2))
@@ -183,19 +182,8 @@ def main():
     print("recording 3 DTW scaled cost:", score3/len(p3))
     
     print()
-    print("Testing cutoff:")
-    best = np.inf
-    score1, _, _ = dtw_with_cutoff(s1, s1, cutoff=best)
-    if score1 < best:
-        best = score1
-    score2, _, _ = dtw_with_cutoff(s1, s2, cutoff=best)
-    if score2 < best:
-        best = score2
-    score3, _, _ = dtw_with_cutoff(s1, s3, cutoff=best)
-    
-    print(score1)
-    print(score2)
-    print(score3)
+    print(f"DTW(A,B) = DTW(B,A): {dtw(s2, s3)[0] == dtw(s3, s2)[0]}")
+    print()
 
 if __name__ == "__main__":
     main()
