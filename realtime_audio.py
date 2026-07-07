@@ -10,6 +10,7 @@
 
 import sounddevice as sd
 import numpy as np
+import time
 
 SAMPLE_RATE = 44100 # recording processes 44100 input points per second (44100 Hz)
 BLOCK_SIZE = 441 # stream sends data in blocks of 441, each block takes 0.01 seconds
@@ -26,35 +27,30 @@ MIN_WORD_BLOCK_LEN = 5
 # this function effectively restarts until the recorded word is long enough.
 def record_word(silence_threshold=0.025):
     recorded_data = []
-    streaming = [True] # setting boolean inside an array so that callback function can access
-    
-    # appends blocks to recorded_data
-    def callback(indata, frames, time, status):
-        if status:
-            print(status)
-        
-        recorded_data.append(indata.copy())
-        
-        # RMS will act as our measurment of audio volume
-        rms = np.sqrt( np.mean( recorded_data[-1]**2 ) )
-        
-        #print(len(recorded_data))
-        #print(rms)
-        
-        # if root mean square (RMS) of a block is less than this, 
-        # the block is considered silent, denoting the end of a word
-        if rms < silence_threshold :
-            if len(recorded_data) >= MIN_WORD_BLOCK_LEN:
-                streaming[0] = False # stops the input stream
-            else:
-                recorded_data.clear() # remove the contents of recorded_data to start again
     
     # each block lasts 0.01 seconds
-    with sd.InputStream(samplerate=SAMPLE_RATE, blocksize=BLOCK_SIZE, callback=callback, channels=1):
-        while streaming[0]:
-            pass
+    with sd.InputStream(samplerate=SAMPLE_RATE, blocksize=BLOCK_SIZE, channels=1) as stream:
+        while True:
+            if stream.read_available >= BLOCK_SIZE:
+                indata, _ = stream.read(BLOCK_SIZE)
+                # append blocks to recorded_data
+                recorded_data.append(indata)
+                
+                # RMS will act as our measurment of audio volume
+                rms = np.sqrt( np.mean( indata**2 ) )
+                
+                # if root mean square (RMS) of a block is less than this, 
+                # the block is considered silent, denoting the end of a word
+                if rms < silence_threshold :
+                    if len(recorded_data) >= MIN_WORD_BLOCK_LEN:
+                        break # stop the input stream
+                    else:
+                        recorded_data.clear() # remove the contents of recorded_data to start again
+            else:
+                time.sleep(0.002) # give stream time to get more data
+                # 2ms of sleep - loop checks on input data up to 5 times before block is filled
     
-    recording = np.array(recorded_data).flatten()    
+    recording = np.concatenate(recorded_data).flatten()    
     return recording
 
 # ----------------------------------------------------------------------
