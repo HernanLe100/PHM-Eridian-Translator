@@ -64,10 +64,10 @@ def main():
     rec_queue = Queue()
     add_queue = Queue()
     
-    translate = AudioMatchingThread(aud, rec_queue, add_queue)
-    adder = AudioAddingThread(aud,add_queue)
-    translate.start()
-    adder.start()
+    match_thread = AudioMatchingThread(aud, rec_queue, add_queue)
+    add_thread = AudioAddingThread(aud,add_queue)
+    match_thread.start()
+    add_thread.start()
     
     while True:
         recording = record_word() # blocking until audio return
