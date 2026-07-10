@@ -72,7 +72,7 @@ class MatchingThread(Thread):
 
 # stdin/stdout on main thread
 def main():
-    aud = AudioDictionary(data_name="words", reset=False)
+    aud = AudioDictionary(data_name="rocky_words", reset=False)
     aud_lock = Lock() # prevent race conditions with audio dictionary
     rec_queue = Queue()
     add_queue = Queue()

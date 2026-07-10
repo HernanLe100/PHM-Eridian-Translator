@@ -28,7 +28,7 @@ class AudioDictionary:
     
     # data_name specifies the name of the subdirectory that stores the data of this AudioDictionary.
     # If reset is True, the named subdirectory will be cleared if it already exists.
-    def __init__(self, data_name="spectrograms", reset=False):
+    def __init__(self, data_name="words", reset=False):
         self._data_name = data_name
         self._spectrogram_file = f"{data_name}/{SPECTROGRAM_FILE}"
         self._structure_file = f"{data_name}/{STRUCTURE_FILE}"
