@@ -18,7 +18,7 @@
 # Avoid pressing Enter multiple times for a single "???" because doing so will 
 # actually queue input for future "???". 
 # For instance, pressing Enter 5 times will queue up inputs (empty inputs: "") for 
-# the next 5 "???" and will automatically apply those inputs.
+# the next 5 "???" and will automatically apply those inputs as the "???" arrive.
 
 # ----------------------------------------------------------------------
 

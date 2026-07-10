@@ -148,18 +148,20 @@ def main():
     from realtime_audio import record_word
     from audio_analyzer import get_spectrogram, remove_noise
     
-    input("press Enter when ready")
-    print("recording...")
+    input("Press Enter when ready")
+    print("Recording...")
     r1 = record_word()
-    print("recording complete\n")
-    input("press Enter when ready")
-    print("recording...")
+    print("Recording complete\n")
+    
+    input("Press Enter when ready")
+    print("Recording...")
     r2 = record_word()
-    print("recording complete\n")
-    input("press Enter when ready")
-    print("recording...")
+    print("Recording complete\n")
+    
+    input("Press Enter when ready")
+    print("Recording...")
     r3 = record_word()
-    print("recording complete\n")
+    print("Recording complete\n")
     
     s1 = remove_noise(get_spectrogram(r1))
     s2 = remove_noise(get_spectrogram(r2))
