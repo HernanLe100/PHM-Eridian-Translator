@@ -58,10 +58,10 @@ For instance, pressing Enter 5 times will queue up inputs (empty inputs: "") for
 ### Regarding DTW
 
 I chose to implement DTW myself instead of using libraries because 1) I wanted to learn how the algorithm worked, 2) most of the other libraries didn't use cosine similarity, and 3) the other libraries were rather slow.
-- librosa was really slow for me for some reason, taking nearly a full second to run DTW with short audio clips.
+- librosa was really slow for me for some reason, taking nearly half a second to run DTW on some audio clips.
 - dtaidistance was fast for 1D data but not for 2D data.
-- fastdtw was faster sometimes but slower for shorter matrices
-- dtw-python was slower in general
+- fastdtw was faster sometimes but slower for shorter matrices because of the added overhead.
+- dtw-python was slower in general.
 
 Writing my own function proved useful later, as I needed to implement an early cutoff version of the algorithm.
 
