@@ -19,7 +19,7 @@ from bucket_vp_tree import Bucket_VP_Tree
 SPECTROGRAM_FILE = "spectrograms.h5"
 STRUCTURE_FILE = "structure.json"
 BUCKET_CAPACITY = 10
-NEAREST_BOUND = 0.2
+NEAREST_BOUND = 0.15
 QUERY_KEY = "query"
 
 # ----------------------------------------------------------------------
