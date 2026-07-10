@@ -24,7 +24,7 @@ Work got busy for a while, but I returned to this project in June and made some 
 - Decided to leave pitch/octave fluctuation (indicative of Rocky's tone/emotion) out of the scope. 
 - Assume Rocky knows to slow his speech down enough so that there is a brief gap of silence between his words. This eliminated the dreaded problem of parsing words in real time.
 
-This was a super fun project to work on, and it was very satisfying to solve one problem after another to bring this program to life. 
+This was a super fun project to work on, and it was so satisfying to solve one problem after another to bring this program to life. 
 
 </details>
 
@@ -48,4 +48,24 @@ For instance, pressing Enter 5 times will queue up inputs (empty inputs: "") for
 
 </details>
 
-## Notes
+<details open> <summary><h2>Files</h2></summary>
+
+</details>
+
+<details open> <summary><h2>Notes</h2></summary>
+
+
+### Regarding DTW
+
+I chose to implement DTW myself instead of using libraries because 1) I wanted to learn how the algorithm worked, 2) most of the other libraries didn't use cosine similarity, and 3) the other libraries were rather slow.
+- librosa was really slow for me for some reason, taking nearly a full second to run DTW with short audio clips.
+- dtaidistance was fast for 1D data but not for 2D data.
+- fastdtw was faster sometimes but slower for shorter matrices
+- dtw-python was slower in general
+
+Writing my own function proved useful later, as I needed to implement an early cutoff version of the algorithm.
+
+
+
+</details>
+
