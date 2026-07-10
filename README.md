@@ -18,19 +18,19 @@ Anyways, I was super excited for the movie, and I began this project after sprin
 
 **I did not.** 
 
-Work got busy for a while, but I returned to this project in June and made some notable changes.
+Work got busy for a while, but I returned to this project in June and made some notable changes to my approach.
 
 - Using dynamic time warping (DTW) instead of audio fingerprinting to account for faster/slower audio.
 - Decided to leave pitch/octave fluctuation (indicative of Rocky's tone/emotion) out of the scope. 
-- Assume Rocky knows to slow his speech down enough so that there is a brief gap of silence between his words. This eliminated the dreaded problem of parsing words in real time.
+- Assume Rocky knows to slow his speech down enough so that there is a brief gap of silence between his words. This simplified the dreaded problem of parsing words in real time.
 
-This was a super fun project to work on, and it was so satisfying to solve one problem after another to bring this program to life. 
+This was a super fun project to work on, and it was so cool to solve one problem after another to bring this program to life. 
 
 </details>
 
 <details open> <summary> <h2>How to use: </h2></summary>
 
-```eridian_translator.py```, takes in audio and matches recording to words in an AudioDictionary, printing the word to the terminal. If no match is found, "???" will be printed. 
+```eridian_translator.py``` takes in audio and matches recording to words in an AudioDictionary, printing the word to the terminal. If no match is found, "???" will be printed. 
 
 When encountering a "???", assign a word to the audio by entering the word enclosed by angle brackets.
 
@@ -50,26 +50,26 @@ For instance, pressing Enter 5 times will queue up inputs (empty inputs: "") for
 
 <details open> <summary><h2>Files</h2></summary>
 
-### realtime_audio.py
+### ```realtime_audio.py```
 Records audio and returns contiguous audio data representing a word
 
-### audio_analyzer.py
+### ```audio_analyzer.py```
 
 Short-time Fourier transform and noise reduction
 
-### audio_dtw.py
+### ```audio_dtw.py```
 
 Dyanmic time warping functions
 
-### bucket_vp_tree.py
+### ```bucket_vp_tree.py```
 
 Data structure to make searching for similar elements faster
 
-### audio_dictionary.py
+### ```audio_dictionary.py```
 
 Uses BucketVPTree to store audio data information
 
-### eridian_translator.py
+### ```eridian_translator.py```
 
 Script to translate input audio in real time and store data in an AudioDictionary
 
