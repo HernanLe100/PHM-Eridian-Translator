@@ -1,4 +1,6 @@
+# dtw_speed_test.py - Hernan Le
 
+# Compare speeds of different DTW algorithm implementations
 
 # ----------------------------------------------------------------------
 import sys

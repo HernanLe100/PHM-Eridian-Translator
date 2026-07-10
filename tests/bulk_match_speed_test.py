@@ -1,4 +1,6 @@
+# bulk_match_speed_test.py - Hernan Le
 
+# Compare speeds of different methods for searching audio matches
 
 # ----------------------------------------------------------------------
 import sys
