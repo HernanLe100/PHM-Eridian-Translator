@@ -11,13 +11,12 @@ sys.path.insert(0, str(parent_dir))
 import time
 import gc # garbage collection
 import numpy as np
+from scipy.spatial.distance import cosine # function for cosine distance
 
-# compare with fastdtw
-import fastdtw
-# other DTW libraries:
+import fastdtw # slower with shorter matrices
 # librosa - too slow
-# dtai - only fast for 1D data
-from scipy.spatial.distance import cosine
+# dtaidistance - only fast for 1D data
+import dtw as dtw_python # dtw-python - still slower
 
 from realtime_audio import record_word
 from audio_analyzer import get_spectrogram, remove_noise
@@ -68,6 +67,18 @@ def fastdtw_speed_test(A, B, num_iter=10):
         sum += end-start
     return sum / num_iter
 
+def dtw_python_speed_test(A, B, num_iter=10):
+    flush_cache()
+    A = A.T
+    B = B.T
+    sum = 0
+    for i in range(num_iter):
+        start = time.process_time()
+        dtw_python.dtw(A, B, dist_method="cosine")
+        end = time.process_time()
+        sum += end-start
+    return sum / num_iter
+
 # ----------------------------------------------------------------------
 
 def speed_comparison():
@@ -75,16 +86,18 @@ def speed_comparison():
     s1 = remove_noise(get_spectrogram(r1))
     s2 = remove_noise(get_spectrogram(r2))
     
-    print(f"DTW avg CPU time:     {dtw_speed_test(s1,s2)}")
-    print(f"FastDTW avg CPU time: {fastdtw_speed_test(s1,s2)}")
+    print(f"DTW avg CPU time:        {dtw_speed_test(s1,s2)}")
+    print(f"FastDTW avg CPU time:    {fastdtw_speed_test(s1,s2)}")
+    print(f"DTW-Python avg CPU time: {dtw_python_speed_test(s1,s2)}")
     
     print(f"Recording 1 length: {len(r1)/44100} seconds")
     print(f"Recording 2 length: {len(r2)/44100} seconds")
     print(f"Spectrogram 1: {s1.shape}")
     print(f"Spectrogram 2: {s2.shape}")
     
-    print(f"DTW score:     {dtw(s1, s2)[0]}")
-    print(f"FastDTW score: {fastdtw.fastdtw(s1.T, s2.T, dist=cosine)[0]}")
+    print(f"DTW score:        {dtw(s1, s2)[0]}")
+    print(f"FastDTW score:    {fastdtw.fastdtw(s1.T, s2.T, dist=cosine)[0]}")
+    print(f"DTW-Python score: {dtw_python.dtw(s1.T, s2.T, dist_method="cosine").distance}")
     
 # ----------------------------------------------------------------------
 
