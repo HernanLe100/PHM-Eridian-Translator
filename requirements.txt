@@ -1,4 +1,4 @@
 h5py==3.16.0
-numpy==2.4.6
+numpy==2.5.1
 scipy==1.18.0
 sounddevice==0.5.5
