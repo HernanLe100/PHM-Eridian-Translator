@@ -90,7 +90,7 @@ def dtai_speed_test(A, B, num_iter=10):
     sum = 0
     for i in range(num_iter):
         start = time.process_time()
-        dtai_dtw.distance(norm_A, norm_B)
+        (dtai_dtw.distance(norm_A, norm_B)**2) / 2
         end = time.process_time()
         sum += end-start
     return sum / num_iter
@@ -128,7 +128,7 @@ def speed_comparison():
     print(f"DTW score:          {dtw(s1, s2)[0]}")
     print(f"Librosa score:      {librosa.sequence.dtw(s1, s2, metric="cosine")[0][-1,-1]}")
     print(f"FastDTW score:      {fastdtw.fastdtw(s1.T, s2.T, dist=cosine)[0]}")
-    print(f"DTAIDistance score: {dtai_dtw.distance(s1.T / np.linalg.norm(s1.T, axis=1, keepdims=True), s2.T / np.linalg.norm(s2.T, axis=1, keepdims=True))}")
+    print(f"DTAIDistance score: {(dtai_dtw.distance(s1.T/np.linalg.norm(s1.T,axis=1,keepdims=True), s2.T/np.linalg.norm(s2.T,axis=1,keepdims=True))**2) / 2 }")
     print(f"DTW-Python score:   {dtw_python.dtw(s1.T, s2.T, dist_method="cosine").distance}")
     
 # ----------------------------------------------------------------------
