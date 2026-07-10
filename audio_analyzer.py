@@ -1,5 +1,8 @@
 # audio_analyzer.py - Hernan Le
 
+# This module contains functions used for audio analysis, 
+# including Fourier transform and spectrogram noise removal.
+
 # ----------------------------------------------------------------------
 
 import numpy as np
