@@ -50,10 +50,32 @@ For instance, pressing Enter 5 times will queue up inputs (empty inputs: "") for
 
 <details open> <summary><h2>Files</h2></summary>
 
+### realtime_audio.py
+Records audio and returns contiguous audio data representing a word
+
+### audio_analyzer.py
+
+Short-time Fourier transform and noise reduction
+
+### audio_dtw.py
+
+Dyanmic time warping functions
+
+### bucket_vp_tree.py
+
+Data structure to make searching for similar elements faster
+
+### audio_dictionary.py
+
+Uses BucketVPTree to store audio data information
+
+### eridian_translator.py
+
+Script to translate input audio in real time and store data in an AudioDictionary
+
 </details>
 
 <details open> <summary><h2>Notes</h2></summary>
-
 
 ### Regarding DTW
 
