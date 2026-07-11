@@ -8,7 +8,7 @@ I love Project Hail Mary
 
 <details open> <summary><h2>About</h2></summary>
 
-In the book, no AI was used for core functions on the Hail Mary, as it was deemed too risky. Although it's possible the mission could've loaded some model onto the massive data drives aboard the Hail Mary, I like to think that Grace wrote a translator script using classical algorithms. After all, he did say it was a simple script.
+In the novel, no AI was used for core functions on the Hail Mary, as it was deemed too risky. Although it's possible the mission could've loaded some model onto the massive data drives aboard the Hail Mary, I like to think that Grace wrote a translator script using classical algorithms. After all, he did say it was a simple script.
 
 **This was not a simple script.**
 
@@ -59,7 +59,7 @@ Short-time Fourier transform and noise reduction
 
 ### ```audio_dtw.py```
 
-Dyanmic time warping functions
+Dynamic time warping functions
 
 ### ```bucket_vp_tree.py```
 
@@ -80,9 +80,9 @@ Script to translate input audio in real time and store data in an AudioDictionar
 ### Regarding DTW
 
 I chose to implement DTW myself instead of using libraries because 1) I wanted to learn how the algorithm worked, 2) most of the other libraries didn't use cosine similarity very well, and 3) the other libraries were rather slow.
-- librosa was really slow for me for some reason, taking nearly half a second to run DTW on some audio clips.
+- librosa was really slow for me for some reason, taking over 50 ms to run DTW on some audio clips.
 - dtaidistance was fast for 1D data but not for 2D data.
-- fastdtw was faster sometimes but slower for shorter matrices because of the added overhead.
+- fastdtw was faster sometimes but slower for shorter matrices because of the added overhead. Additionally, the FastDTW algorithm is only an approximation.
 - dtw-python was slower in general.
 
 Writing my own function proved useful later, as I needed to implement an early cutoff version of the algorithm.
@@ -91,7 +91,4 @@ Writing my own function proved useful later, as I needed to implement an early c
 
 I used the legacy STFT function because it was easier for me to use.
 
-
-
 </details>
-
