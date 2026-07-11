@@ -80,7 +80,7 @@ Script to translate input audio in real time and store data in an AudioDictionar
 ### Regarding DTW
 
 I chose to implement DTW myself instead of using libraries because 1) I wanted to learn how the algorithm worked, 2) most of the other libraries didn't use cosine similarity very well, and 3) the other libraries were rather slow.
-- librosa was really slow for me for some reason, taking over 50 ms to run DTW on some audio clips.
+- librosa was really slow for me for some reason, taking over 10 times longer to run DTW on some audio clips.
 - dtaidistance was fast for 1D data but not for 2D data.
 - fastdtw was faster sometimes but slower for shorter matrices because of the added overhead. Additionally, the FastDTW algorithm is only an approximation.
 - dtw-python was slower in general.
